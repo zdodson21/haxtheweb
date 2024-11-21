@@ -14,6 +14,15 @@ import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
  */
 export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
 
+  /*
+    TODO:
+    * Logic for getting information from site.json
+    * Accessibility for buttons
+    * APA Rendering
+    * MLA Rendering
+    * Chicago Rendering
+  */
+
   static get tag() {
     return "citation-generator";
   }
@@ -105,6 +114,9 @@ export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
     `;
   }
 
+  /**
+   * Based on: https://owl.purdue.edu/owl/research_and_citation/apa_style/apa_formatting_and_style_guide/reference_list_electronic_sources.html
+   */
   renderAPA() {
     return html`
       <div class="citation-wrapper">
@@ -119,10 +131,24 @@ export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
     `
   }
 
+  /**
+   * Based on: https://owl.purdue.edu/owl/research_and_citation/mla_style/mla_formatting_and_style_guide/mla_works_cited_electronic_sources.html
+   */
+  renderMLA() {
+
+  }
+
+  /**
+   * Based on: https://owl.purdue.edu/owl/research_and_citation/chicago_manual_17th_edition/cmos_formatting_and_style_guide/web_sources.html
+   */
+  renderChicago() {
+
+  }
+
   getSiteData() {
     fetch(`${this.currentWebsite}/site.json`).then(d => d.ok ? d.json(): {}).then(data => {
       console.log(data);
-      this.author = data.author;
+      this.author = data.metadata.author.name;
       this.title = findPageData(data, "title");
 
     })
