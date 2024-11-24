@@ -2,9 +2,9 @@
  * Copyright 2024 haxtheweb
  * @license Apache-2.0, see LICENSE for full text.
  */
-import { LitElement, html, css } from "lit";
 import { DDDSuper } from "@haxtheweb/d-d-d/d-d-d.js";
 import { I18NMixin } from "@haxtheweb/i18n-manager/lib/I18NMixin.js";
+import { LitElement, css, html } from "lit";
 
 /**
  * `citation-generator`
@@ -39,7 +39,8 @@ export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
     this.citationStyle = "APA"; // Supports APA, MLA, and Chicago
     this.author = "Author";
     this.creationDate = "n.d."
-    this.lastUpdatedDate = "n.d."
+    this.lastUpdated = "n.d."
+    this.accessDate = new Date(); // Will be formatted by citation style functions
     this.title = "Title";
     this.organization = "HAXTheWeb";
 
@@ -73,11 +74,19 @@ export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
   static get properties() {
     return {
       ...super.properties,
-      title: { type: String },
-      // TODO Remove reflects and attributes
-      currentURL: { type: String, reflect: true, attribute: "current-url" },
-      currentSlug: { type: String, reflect: true, attribute: "current-slug" },
-      citationStyle: { type: String, reflect: true, attribute: "citation-style" },
+      currentURL: { type: String, },
+      currentSlug: { type: String, },
+      citationStyle: { type: String, },
+      pageProtocol: { type: String, },
+
+      citationStyle: { type: String, reflect: true, attribute: "citation-style", },
+
+      author: { type: String, },
+      creationDate: { type: String, },
+      lastUpdated: { type: String,},
+      accessDate: { type: String, },
+      title: { type: String, },
+      organization: { type: String, },
     };
   }
 
@@ -88,10 +97,13 @@ export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
       :host {
         display: block;
       }
+
+      /* Controls */
       .selected {
         color: red;
       }
 
+      /* Citation */
       .title {
         font-style: italic;
       }
@@ -103,15 +115,26 @@ export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
     return html`
       <div class="citation-generator-wrapper">
         <div class="citation-selection">
-          <button id="APA" class="selected">APA</button>
+          <button id="APA">APA</button>
           <button id="MLA">MLA</button>
           <button id="Chicago">Chicago</button>
         </div>
         <div class="citation">
-          ${this.renderAPA()}
+          ${this.renderCitation()}
         </div>
       </div>
     `;
+  }
+
+  renderCitation() {
+    switch (this.citationStyle) {
+      case "APA":
+        return this.renderAPA();
+      case "MLA":
+        return this.renderMLA();
+      case "Chicago":
+        return this.renderChicago();
+    }
   }
 
   /**
@@ -122,7 +145,7 @@ export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
       <div class="citation-wrapper">
         <p>
           <span class="author">${this.author}</span>.
-          (<span class="date">${this.lastUpdatedDate}</span>).
+          (<span class="date">${this.lastUpdated}</span>).
           <span class="title">${this.title}</span>.
           <span class="organization">${this.organization}</span>.
           <span class="URL">${this.currentURL}</span>
@@ -142,7 +165,15 @@ export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
    * Based on: https://owl.purdue.edu/owl/research_and_citation/chicago_manual_17th_edition/cmos_formatting_and_style_guide/web_sources.html
    */
   renderChicago() {
-
+    return html`
+      <p>
+        <span class="author">${this.author}</span>.
+        "<span class="title">${this.title}</span>."
+        <!-- Name of website -->
+        <span class="organization">${this.organization}</span>, <span class="date">${this.lastUpdated}</span>
+        <span class="URL">${this.currentURL}</span>
+      </p>
+    `
   }
 
   getSiteData() {
@@ -150,7 +181,6 @@ export class CitationGenerator extends DDDSuper(I18NMixin(LitElement)) {
       console.log(data);
       this.author = data.metadata.author.name;
       this.title = findPageData(data, "title");
-
     })
   }
 
