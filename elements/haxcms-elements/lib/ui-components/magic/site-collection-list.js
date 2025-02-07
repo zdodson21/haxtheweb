@@ -35,10 +35,7 @@ export class SiteCollectionList extends CollectionList {
         .conditions="${this.conditions}"
         limit="${this.limit}"
       ></site-query>
-      <collection-list
-        items-per-row="${this.itemsPerRow}"
-        ?lock-items="${this.editMode}"
-      >
+      <collection-list ?lock-items="${this.editMode}">
         ${this.results.map(
           (item) => html`
             <collection-item
@@ -129,7 +126,10 @@ export class SiteCollectionList extends CollectionList {
           conditions.parent = this.parent;
         }
         if (this.tags !== "" && this.tags !== null) {
-          conditions["metadata.tags"] = this.tags;
+          conditions["metadata.tags"] = {
+            value: this.tags.split(","),
+            operator: "includes",
+          };
         }
         if (this.pageType !== "" && this.pageType !== null) {
           conditions["metadata.pageType"] = this.pageType;

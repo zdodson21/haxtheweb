@@ -1664,6 +1664,12 @@ export const DDDReset = css`
     font-family: var(--ddd-font-primary);
     margin: 0 0 var(--ddd-spacing-6) 0;
   }
+  /** can't override margin requirements when in a more specific context **/
+  grid-plate ul,
+  grid-plate ol {
+    margin: var(--grid-plate-item-padding, 16px);
+    padding: var(--grid-plate-item-padding, 16px);
+  }
   ul.link-list {
     list-style: none;
   }
@@ -2129,6 +2135,7 @@ export const DDDReset = css`
   }
 
   code {
+    user-select: all;
     transition: all 0.3s ease 0s;
     display: inline-block;
     padding: 2px var(--ddd-spacing-1); /* breaking DDD spacing sys on purpose for code */

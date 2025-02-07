@@ -34,9 +34,18 @@ class MapMenuHeader extends I18NMixin(LitElement) {
         }
 
         :host([active]) button {
+          color: var(
+            --map-menu-item-a-active-color,
+            var(--map-menu-item-a-color, inherit)
+          );
           font-weight: var(--map-menu-item-button-active-font-weight, bold);
+          text-decoration: var(
+            --map-menu-active-item-text-decoration,
+            var(--map-menu-header-a-text-decoration-hover, none)
+          );
+          background-color: var(--map-menu-item-a-active-background-color);
+          border-radius: var(--map-menu-item-border-radius, 0px);
         }
-        :host([active]) button,
         :host([hovered]) button,
         a:hover button,
         a:focus-within button,
@@ -47,6 +56,7 @@ class MapMenuHeader extends I18NMixin(LitElement) {
           );
           text-decoration: var(--map-menu-header-a-text-decoration-hover, none);
           background-color: var(--map-menu-item-a-active-background-color);
+          border-radius: var(--map-menu-item-border-radius, 0px);
         }
 
         #link {
@@ -74,12 +84,13 @@ class MapMenuHeader extends I18NMixin(LitElement) {
         }
 
         .title {
-          text-transform: none;
+          text-transform: var(--map-menu-text-transform, none);
           font-size: var(--map-menu-font-size);
+          font-weight: var(--map-menu-font-weight);
           text-overflow: ellipsis;
           vertical-align: middle;
           max-width: 240px;
-          margin-left: 8px;
+          margin-left: var(--map-menu-header-title-margin, 8px);
           white-space: nowrap;
           overflow: hidden;
           word-break: break-all;
@@ -97,7 +108,7 @@ class MapMenuHeader extends I18NMixin(LitElement) {
           justify-content: left;
           margin: 0;
           border: 0px;
-          padding: 10px 20px;
+          padding: var(--map-menu-header-button-padding, 10px 20px);
           text-align: left;
           border-radius: 0px;
           vertical-align: middle;
@@ -129,6 +140,9 @@ class MapMenuHeader extends I18NMixin(LitElement) {
         }
         :host(:not([icon=""])) button {
           padding-left: 0;
+        }
+        :host(:not([icon=""])[is-flex]) button {
+          padding: var(--map-menu-header-button-padding);
         }
         .ops {
           position: absolute;
@@ -165,6 +179,7 @@ class MapMenuHeader extends I18NMixin(LitElement) {
             ? html`
                 <simple-icon-lite
                   icon="${this.icon}"
+                  part="icon"
                   id="icon"
                 ></simple-icon-lite>
                 ${this.iconLabel
@@ -198,6 +213,7 @@ class MapMenuHeader extends I18NMixin(LitElement) {
   constructor() {
     super();
     this.editControls = false;
+    this.isFlex = false;
     this.iconLabel = null;
     this.icon = null;
     this.url = "";
@@ -262,6 +278,10 @@ class MapMenuHeader extends I18NMixin(LitElement) {
       editControls: {
         type: Boolean,
         attribute: "edit-controls",
+      },
+      isFlex: {
+        type: Boolean,
+        attribute: "is-flex",
       },
       url: {
         type: String,

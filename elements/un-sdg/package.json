@@ -1,6 +1,6 @@
 {
   "name": "@haxtheweb/un-sdg",
-  "version": "9.0.18",
+  "version": "10.0.2",
   "description": "Webcomponent un-sdg following hax / open-wc recommendations",
   "license": "Apache-2.0",
   "author": {
@@ -27,11 +27,11 @@
     "test:watch": "web-test-runner test/**/*.test.js --node-resolve --watch"
   },
   "dependencies": {
-    "lit": "^3.2.0"
+    "lit": "^3.2.1"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.4",
-    "@custom-elements-manifest/analyzer": "^0.4.17",
+    "@custom-elements-manifest/analyzer": "^0.10.4",
     "@open-wc/building-rollup": "^3.0.2",
     "@open-wc/testing": "^4.0.0",
     "@rollup/plugin-babel": "^6.0.4",

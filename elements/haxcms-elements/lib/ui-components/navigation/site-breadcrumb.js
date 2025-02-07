@@ -9,6 +9,7 @@ import "@haxtheweb/simple-icon/lib/simple-icons.js";
 import { autorun, toJS } from "mobx";
 import { DDD } from "@haxtheweb/d-d-d/d-d-d.js";
 import { DDDBreadcrumb } from "@haxtheweb/d-d-d/lib/DDDStyles.js";
+import { HAXCMSI18NMixin } from "@haxtheweb/haxcms-elements/lib/core/utils/HAXCMSI18NMixin.js";
 
 /**
  * `site-breadcrumb`
@@ -16,7 +17,7 @@ import { DDDBreadcrumb } from "@haxtheweb/d-d-d/lib/DDDStyles.js";
  *
  * @demo demo/index.html
  */
-class SiteBreadcrumb extends DDD {
+class SiteBreadcrumb extends HAXCMSI18NMixin(DDD) {
   static get styles() {
     return [
       super.styles,
@@ -25,11 +26,15 @@ class SiteBreadcrumb extends DDD {
         :host {
           display: block;
         }
-        .breadcrumb {
+        ol.breadcrumb {
           font-weight: var(--ddd-font-weight-light);
           margin: var(--site-breadcrumb-margin, var(--ddd-spacing-6) 0);
           padding: 0;
           pointer-events: auto;
+          font-size: var(
+            --site-breadcrumb-font-size,
+            var(--ddd-font-size-4xs, 16px)
+          );
           list-style: "/";
           gap: var(--ddd-spacing-2);
           display: flex;
@@ -38,7 +43,13 @@ class SiteBreadcrumb extends DDD {
           line-height: normal;
           text-align: start;
         }
-        .breadcrumb li a {
+        ol.breadcrumb li {
+          font-size: var(
+            --site-breadcrumb-font-size,
+            var(--ddd-font-size-4xs, 16px)
+          );
+        }
+        ol.breadcrumb li a {
           vertical-align: text-top;
           display: inline-block;
           padding: 0 var(--ddd-spacing-2);
@@ -54,10 +65,10 @@ class SiteBreadcrumb extends DDD {
             var(--ddd-theme-default-link, #383f45)
           );
         }
-        .breadcrumb li:first-child a {
+        ol.breadcrumb li:first-child a {
           padding-left: 0;
         }
-        .breadcrumb li:last-child a {
+        ol.breadcrumb li:last-child a {
           color: var(--site-breadcrumb-last-color, black);
           pointer-events: none;
         }
@@ -74,12 +85,18 @@ class SiteBreadcrumb extends DDD {
     super();
     this.__disposer = [];
     this.items = [];
+    this.includeHome = false;
+    this.t = this.t || {};
+    this.t = {
+      ...this.t,
+      home: "Home",
+    };
   }
   // render function
   render() {
     return html` ${this.items.length > 0
       ? html`
-          <ul
+          <ol
             class="breadcrumb"
             itemscope
             itemtype="https://schema.org/BreadcrumbList"
@@ -94,7 +111,7 @@ class SiteBreadcrumb extends DDD {
                   <a itemprop="item" href="${item.slug}">${item.title}</a>
                 </li>`,
             )}
-          </ul>
+          </ol>
         `
       : ``}`;
   }
@@ -103,6 +120,7 @@ class SiteBreadcrumb extends DDD {
     return {
       items: { type: Array },
       editMode: { type: Boolean, reflect: true, attribute: "edit-mode" },
+      includeHome: { type: Boolean, reflect: true, attribute: "include-home" },
     };
   }
 
@@ -145,8 +163,22 @@ class SiteBreadcrumb extends DDD {
           });
         }
       }
+      if (this.includeHome) {
+        items.unshift({
+          title: this.t.home,
+          slug: store.homeLink,
+        });
+      }
       // don't display if we are the only thing in the trail bc there is no point
-      if (items.length === 1) {
+      if (!this.includeHome && items.length === 1) {
+        this.items = [];
+      }
+      // ensure no trail on the home page if it matches the trail
+      else if (
+        this.includeHome &&
+        items.length === 2 &&
+        items[0].slug === items[1].slug
+      ) {
         this.items = [];
       } else {
         this.items = [...items];

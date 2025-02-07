@@ -454,6 +454,7 @@ export class QuestionElement extends SchemaBehaviors(
         }
         details {
           max-width: unset;
+          display: block;
         }
         details[open] {
           view-transition-name: details-open;
@@ -486,6 +487,11 @@ export class QuestionElement extends SchemaBehaviors(
         }
         ul li {
           padding: 0;
+        }
+        img {
+          max-width: var(--question-element-img-max-width, 250px);
+          height: var(--question-element-img-height, 100px);
+          vertical-align: middle;
         }
         simple-icon {
           display: inline-flex;
@@ -643,7 +649,10 @@ export class QuestionElement extends SchemaBehaviors(
           border: 2px dashed #999999;
           box-sizing: border-box;
           padding: 16px;
-          background-color: #f5f5f5;
+          background-color: light-dark(
+            var(--ddd-theme-default-limestoneMaxLight),
+            var(--ddd-theme-default-potentialMidnight)
+          );
         }
         :host([edit]) .edit-wrapper::before {
           content: "Feedback edit mode";
@@ -876,7 +885,15 @@ export class QuestionElement extends SchemaBehaviors(
               .value="${answer ? answer.userGuess : ""}"
               @value-changed="${this.checkedEvent}"
               label="${answer && answer.label ? answer.label : ""}"
-            ></simple-fields-field>
+              >${answer.image
+                ? html`<img
+                    src="${answer.image}"
+                    alt="${answer.alt}"
+                    slot="label-prefix"
+                    part="image"
+                  />`
+                : nothing}</simple-fields-field
+            >
           `,
         )}
       </fieldset>

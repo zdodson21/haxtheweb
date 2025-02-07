@@ -37,8 +37,14 @@ class HaxorSlevin extends HAXCMSThemeParts(
       css`
         :host {
           display: block;
-          background-color: var(--simple-colors-default-theme-grey-1);
-          color: var(--simple-colors-default-theme-grey-12);
+          background-color: light-dark(
+            var(--ddd-theme-default-white),
+            var(--ddd-theme-default-coalyGray)
+          );
+          color: light-dark(
+            var(--ddd-theme-default-coalyGray),
+            var(--ddd-theme-default-white)
+          );
           transition:
             0.6s ease-in-out color,
             0.6s ease-in-out background-color;
@@ -660,8 +666,13 @@ class HaxorSlevin extends HAXCMSThemeParts(
       super.updated(changedProperties);
     }
     changedProperties.forEach((oldValue, propName) => {
-      if (propName == "editMode") {
+      if (propName === "editMode") {
         this.stateClass = this._getStateClass(this[propName]);
+      }
+      if (propName === "selectedPage" && this.selectedPage === 0) {
+        setTimeout(() => {
+          store.activeId = null;          
+        }, 0);
       }
     });
   }

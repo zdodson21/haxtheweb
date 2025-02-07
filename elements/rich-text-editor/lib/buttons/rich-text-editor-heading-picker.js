@@ -26,15 +26,6 @@ class RichTextEditorHeadingPicker extends RichTextEditorPickerBehaviors(
     return "rich-text-editor-heading-picker";
   }
 
-  static get styles() {
-    return [...super.styles];
-  }
-
-  // render function for template
-  render() {
-    return super.render();
-  }
-
   constructor() {
     super();
     this.allowNull = true;
@@ -53,7 +44,7 @@ class RichTextEditorHeadingPicker extends RichTextEditorPickerBehaviors(
     this.command = "formatBlock";
     this.icon = undefined;
     this.label = "Block format";
-    this.tagsList = "p,h1,h2,h3,h4,h5,h6,div,address,blockquote,pre";
+    this.tagsList = "p,h1,h2,h3,h4,h5,h6,div,address,section,blockquote,pre";
     this.titleAsHtml = undefined;
   }
 
@@ -96,7 +87,6 @@ class RichTextEditorHeadingPicker extends RichTextEditorPickerBehaviors(
        *
        */
       blocks: {
-        name: "blocks",
         type: Array,
       },
     };

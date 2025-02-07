@@ -19,7 +19,7 @@
     "sharedProps": [],
     "sharedStyles": []
   },
-  "version": "9.0.19",
+  "version": "10.0.2",
   "description": "Reads barcodes",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
   "module": "barcode-reader.js",
   "scripts": {
     "start": "yarn run dev",
-    "build": "gulp --gulpfile=gulpfile.cjs && prettier --ignore-path ../../.prettierignore --write \"**/*.{js,json}\" && wca analyze \"*.js|lib/**.js\" --format vscode --outFile custom-elements.json",
+    "build": "gulp --gulpfile=gulpfile.cjs && prettier --ignore-path ../../.prettierignore --write \"**/*.{js,json}\" && cem analyze --litelement --exclude \"(public|*.stories.js)\" --globs \"{*,lib/**}.js\"",
     "dev": "concurrently --kill-others \"yarn run watch\" \"yarn run serve\"",
     "watch": "gulp dev --gulpfile=gulpfile.cjs",
     "serve": "web-dev-server -c ../../web-dev-server.config.mjs",
@@ -44,24 +44,24 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@haxtheweb/es-global-bridge": "^9.0.18",
-    "@haxtheweb/simple-icon": "^9.0.18",
+    "@haxtheweb/es-global-bridge": "^10.0.0",
+    "@haxtheweb/simple-icon": "^10.0.2",
     "@zxing/browser": "0.1.1",
     "@zxing/library": "0.19.1",
     "javascript-barcode-reader": "0.6.9",
     "jquery": "^3.6.0",
-    "lit": "^3.2.0"
+    "lit": "^3.2.1"
   },
   "devDependencies": {
-    "@haxtheweb/deduping-fix": "^9.0.18",
+    "@custom-elements-manifest/analyzer": "^0.10.4",
+    "@haxtheweb/deduping-fix": "^10.0.0",
     "@open-wc/testing": "4.0.0",
     "@polymer/iron-component-page": "github:PolymerElements/iron-component-page",
     "@polymer/iron-demo-helpers": "3.1.0",
     "@web/dev-server": "0.4.6",
     "@webcomponents/webcomponentsjs": "^2.8.0",
-    "concurrently": "8.2.2",
+    "concurrently": "9.1.2",
     "gulp-babel": "8.0.0",
-    "lodash": "^4.17.21",
     "wct-browser-legacy": "1.0.2"
   },
   "private": false,

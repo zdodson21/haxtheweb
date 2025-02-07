@@ -78,7 +78,21 @@ class SiteChildrenBlock extends LitElement {
     this.start = 0;
     this.end = 1000;
     this.fixedId = false;
+    this.activeId = "";
     this.__items = [];
+
+    autorun((reaction) => {
+      this.editMode = toJS(store.editMode);
+      this.__disposer.push(reaction);
+    });
+    autorun((reaction) => {
+      this.manifest = toJS(store.manifest);
+      this.__disposer.push(reaction);
+    });
+    autorun((reaction) => {
+      this.activeId = toJS(store.activeId);
+      this.__disposer.push(reaction);
+    });
   }
 
   static get styles() {
@@ -100,15 +114,17 @@ class SiteChildrenBlock extends LitElement {
           color: var(--site-children-block-link-color, #444444);
           text-decoration: none;
         }
-        .link button:hover,
-        .link button:focus {
+        .link button:hover div,
+        .link button:focus div {
           text-decoration: underline;
+          color: var(--site-children-block-link-hover-color, #000000);
         }
         button {
           cursor: pointer;
           display: block;
           line-height: inherit;
-          font-size: inherit;
+          font-size: var(--site-children-block-font-size, inherit);
+          font-family: inherit;
           padding: 0;
           margin: 0;
           text-align: left;
@@ -129,12 +145,40 @@ class SiteChildrenBlock extends LitElement {
         }
         li {
           margin: 0;
-          padding: 0;
+          padding: var(--site-children-block-li-padding, 0);
+          border-bottom: var(--site-children-block-border-bottom, none);
         }
         .active {
-          color: var(--site-children-block-link-active-color, #000000);
           background-color: var(--site-children-block-link-active-bg);
+          padding-left: 4px;
+          border-left: var(--site-children-block-active-border-left);
         }
+        .active button {
+          font-weight: 700;
+          color: var(--site-children-block-link-active-color, #000000);
+        }
+
+        .top-level .active {
+          padding-left: var(--site-children-block-parent-active-padding);
+        }
+        .top-level button {
+          font-weight: var(--site-children-block-parent-font-weight);
+          font-size: calc(var(--site-children-block-font-size, inherit) + 2px);
+          text-transform: var(
+            --site-children-block-parent-text-transform,
+            uppercase
+          );
+        }
+        .top-level .active button {
+          font-weight: 700;
+        }
+        .sub-level button {
+          text-transform: var(
+            --site-children-block-child-text-transform,
+            capitalize
+          );
+        }
+
         .spacing .indent {
           display: inline-flex;
         }
@@ -192,16 +236,20 @@ class SiteChildrenBlock extends LitElement {
             item.metadata.published === false
               ? ``
               : html`
-                  <li class="spacing">
+                  <li
+                    class="spacing ${item.indent === 0
+                      ? "top-level"
+                      : "sub-level"}"
+                  >
                     <a
-                      data-id="${item.id}"
-                      class="link"
+                      class="link ${item.id === this.activeId ? "active" : ""}"
                       tabindex="-1"
                       href="${item.slug}"
                     >
                       <button>
-                        <div class="indent indent-${item.indent}"></div>
-                        ${item.title}
+                        <div class="indent indent-${item.indent}">
+                          ${item.title}
+                        </div>
                       </button>
                     </a>
                   </li>
@@ -257,7 +305,6 @@ class SiteChildrenBlock extends LitElement {
        */
       activeId: {
         type: String,
-        attribute: "active-id",
       },
       editMode: {
         type: Boolean,
@@ -265,89 +312,6 @@ class SiteChildrenBlock extends LitElement {
         attribute: "edit-mode",
       },
     };
-  }
-  /**
-   * When active ID changes, see if we know what to highlight automatically
-   */
-  _activeIdChanged(newValue) {
-    if (newValue) {
-      let el = null;
-      //ensure that this level is included
-      if (this.shadowRoot.querySelector('[data-id="' + newValue + '"]')) {
-        el = this.shadowRoot.querySelector('[data-id="' + newValue + '"]');
-      } else {
-        let tmpItem = this.manifest.items.find((i) => i.id == newValue);
-        // fallback, maybe there's a child of this currently active
-        while (el === null && tmpItem && tmpItem.parent != null) {
-          // take the parent object of this current item
-          tmpItem = this.manifest.items.find((i) => i.id == tmpItem.parent);
-          // see if IT lives in the dom, if not, keep going until we run out
-          if (
-            tmpItem &&
-            this.shadowRoot.querySelector('[data-id="' + tmpItem.id + '"]')
-          ) {
-            el = this.shadowRoot.querySelector(
-              '[data-id="' + tmpItem.id + '"]',
-            );
-          }
-        }
-      }
-      if (this._prevEl) {
-        this._prevEl.classList.remove("active");
-      }
-      if (el) {
-        el.classList.add("active");
-        this._prevEl = el;
-      }
-    } else {
-      // shouldn't be possible but might as well list
-      if (this._prevEl) {
-        this._prevEl.classList.remove("active");
-      }
-    }
-  }
-
-  updated(changedProperties) {
-    super.updated(changedProperties);
-    changedProperties.forEach((oldValue, propName) => {
-      if (propName === "__items") {
-        this.dispatchEvent(
-          new CustomEvent(`${this[propName]}-changed`, {
-            detail: this[propName],
-          }),
-        );
-      }
-      if (propName === "_activeId" && this.shadowRoot) {
-        this._activeIdChanged(this[(propName, oldValue)]);
-      }
-    });
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    autorun((reaction) => {
-      this.editMode = toJS(store.editMode);
-      this.__disposer.push(reaction);
-    });
-    autorun((reaction) => {
-      this.manifest = toJS(store.manifest);
-      this.__disposer.push(reaction);
-    });
-    // minor timing thing to ensure store has picked active
-    // needed if routes set on first paint or lifecycles miss
-    setTimeout(() => {
-      autorun((reaction) => {
-        this.activeId = toJS(store.activeId);
-        this.__disposer.push(reaction);
-      });
-    }, 250);
-  }
-  disconnectedCallback() {
-    // clean up state
-    for (var i in this.__disposer) {
-      this.__disposer[i].dispose();
-    }
-    super.disconnectedCallback();
   }
 }
 customElements.define(SiteChildrenBlock.tag, SiteChildrenBlock);

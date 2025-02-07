@@ -7,16 +7,10 @@
     "generator-wcfactory-version": "0.3.2",
     "useHAX": true,
     "useSass": false,
-    "files": {
-      "css": "src/stop-note.css",
-      "html": "src/stop-note.html",
-      "js": "src/stop-note.js",
-      "properties": "src/stop-note-properties.json",
-      "hax": "src/stop-note-hax.json"
-    },
+    "files": {},
     "sharedStyles": []
   },
-  "version": "9.0.19",
+  "version": "10.0.2",
   "description": "Automated conversion of stop-note/",
   "repository": {
     "type": "git",
@@ -27,7 +21,7 @@
   "module": "stop-note.js",
   "scripts": {
     "start": "yarn run dev",
-    "build": "gulp --gulpfile=gulpfile.cjs && prettier --ignore-path ../../.prettierignore --write \"**/*.{js,json}\" && wca analyze \"*.js|lib/**.js\" --format json --outFile custom-elements.json",
+    "build": "gulp --gulpfile=gulpfile.cjs && prettier --ignore-path ../../.prettierignore --write \"**/*.{js,json}\" && cem analyze --litelement --dev --exclude \"(public|*.stories.js)\" --globs \"{*,lib/**}.js\"",
     "dev": "concurrently --kill-others \"yarn run watch\" \"yarn run serve\"",
     "watch": "gulp dev --gulpfile=gulpfile.cjs",
     "serve": "web-dev-server -c ../../web-dev-server.config.mjs",
@@ -41,23 +35,23 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@haxtheweb/d-d-d": "^9.0.19",
-    "@haxtheweb/i18n-manager": "^9.0.18",
-    "@haxtheweb/schema-behaviors": "^9.0.18",
-    "@haxtheweb/simple-colors": "^9.0.18",
-    "@haxtheweb/simple-icon": "^9.0.18",
-    "@haxtheweb/utils": "^9.0.18",
-    "lit": "^3.2.0"
+    "@haxtheweb/d-d-d": "^10.0.2",
+    "@haxtheweb/i18n-manager": "^10.0.2",
+    "@haxtheweb/schema-behaviors": "^10.0.2",
+    "@haxtheweb/simple-colors": "^10.0.2",
+    "@haxtheweb/simple-icon": "^10.0.2",
+    "@haxtheweb/utils": "^10.0.0",
+    "lit": "^3.2.1"
   },
   "devDependencies": {
-    "@haxtheweb/deduping-fix": "^9.0.18",
-    "@haxtheweb/storybook-utilities": "^9.0.18",
+    "@custom-elements-manifest/analyzer": "^0.10.4",
+    "@haxtheweb/deduping-fix": "^10.0.0",
+    "@haxtheweb/storybook-utilities": "^10.0.2",
     "@open-wc/testing": "4.0.0",
-    "@polymer/iron-component-page": "github:PolymerElements/iron-component-page",
     "@polymer/iron-demo-helpers": "3.1.0",
     "@web/dev-server": "0.4.6",
-    "@webcomponents/webcomponentsjs": "^2.8.0",
-    "concurrently": "8.2.2",
+    "concurrently": "9.1.2",
+    "wc-dox": "1.1.0",
     "wct-browser-legacy": "1.0.2"
   },
   "private": false,

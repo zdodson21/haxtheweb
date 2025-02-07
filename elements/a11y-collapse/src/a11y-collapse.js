@@ -4,40 +4,11 @@ import "@haxtheweb/simple-icon/lib/simple-icon-button-lite.js";
 import "@haxtheweb/simple-icon/lib/simple-icon-lite.js";
 import "@haxtheweb/simple-icon/lib/simple-icons.js";
 import "@haxtheweb/simple-tooltip/simple-tooltip.js";
-/**
- * `a11y-collapse`
- * an accessible expand collapse
- * 
-### Styling
 
-`<a11y-collapse>` provides the following custom properties
-for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--a11y-collapse-margin` | margin around a11y-collapse | 15px 0
-`--a11y-collapse-border` | border around a11y-collapse | 1px solid
-`--a11y-collapse-horizontal-padding` | horizontal padding inside a11y-collapse | 16px
-`--a11y-collapse-horizontal-padding-left` | left padding inside a11y-collapse | `--a11y-collapse-horizontal-padding`
-`--a11y-collapse-horizontal-padding-right` | right padding inside a11y-collapse | `--a11y-collapse-horizontal-padding`
-`--a11y-collapse-vertical-padding` | vertical padding inside a11y-collapse | 16px
-`--a11y-collapse-horizontal-padding-top` | top padding inside a11y-collapse | `--a11y-collapse-vertical-padding`
-`--a11y-collapse-horizontal-padding-bottom` | bottom padding inside a11y-collapse | --a11y-collapse-vertical-padding
-`--a11y-collapse-border-between` | border between a11y-collapse heading and content | --a11y-collapse-border
-`--a11y-collapse-heading-font-weight` | font-weight for a11y-collapse heading | bold
-`--a11y-collapse-heading-color` | text color for a11y-collapse heading | unset
-`--a11y-collapse-heading-background-color` | background-color for a11y-collapse heading | unset
-`--a11y-collapse-overflow-y` | override default overflow behavior | hidden
-`--a11y-collapse-max-height` | override maximum height of collapse section | 200000000000vh, so that aanimation effect works
- *
- * @customElement
- * @extends LitElement
- * @demo demo/index.html
- * @demo ./demo/group.html collapse groups
- */
 class A11yCollapse extends DDD {
   static get styles() {
     return [
+      super.styles,
       css`
         :host {
           display: block;
@@ -102,7 +73,7 @@ class A11yCollapse extends DDD {
           overflow: hidden;
         }
         #expand {
-          transform: rotate(0deg);
+          transform: rotate(var(--a11y-collapse-transform-deg, 0deg));
           transition: transform 0.75s ease;
         }
         #content {
@@ -130,7 +101,9 @@ class A11yCollapse extends DDD {
         }
         @media screen {
           #expand.rotated {
-            transform: rotate(-90deg);
+            transform: rotate(
+              var(--a11y-collapse-transform-rotated-deg, -90deg)
+            );
             transition: transform 0.75s ease;
           }
           :host #content {
@@ -148,9 +121,9 @@ class A11yCollapse extends DDD {
             border-color: var(--a11y-collapse-border-color);
             max-height: 0;
             transition:
-              visibility 0.75s ease,
-              opacity 0.75s ease,
-              max-height 0.75s ease;
+              visibility var(--a11y-collapse-transition-duration, 0.75s) ease,
+              opacity var(--a11y-collapse-transition-duration, 0.75s) ease,
+              max-height var(--a11y-collapse-transition-duration, 0.75s) ease;
             overflow-y: hidden;
             opacity: 1;
             visibility: visible;
@@ -222,6 +195,7 @@ class A11yCollapse extends DDD {
 
   static get properties() {
     return {
+      ...super.properties,
       /**
        * Heading is the expand button.
        */
@@ -231,7 +205,7 @@ class A11yCollapse extends DDD {
         attribute: "heading-button",
       },
       /**
-       * disbled
+       * disabled
        */
       disabled: {
         type: Boolean,
@@ -382,6 +356,9 @@ class A11yCollapse extends DDD {
   }
 
   updated(changedProperties) {
+    if (super.updated) {
+      super.updated(changedProperties);
+    }
     changedProperties.forEach((oldValue, propName) => {
       if (propName === "expanded") this._fireToggleEvents();
     });
